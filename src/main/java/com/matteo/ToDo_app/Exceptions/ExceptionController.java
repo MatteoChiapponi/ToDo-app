@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -15,6 +16,25 @@ import java.util.Map;
 @ControllerAdvice
 public class ExceptionController extends ResponseEntityExceptionHandler {
 
+    @ExceptionHandler(BadRequestException.class)
+    protected ResponseEntity<?> handleBadRequestExeption(BadRequestException badReq){
+        return ResponseEntity.badRequest().body(badReq.getMessage());
+    }
+
+    @ExceptionHandler(EntityNotFoudException.class)
+    protected ResponseEntity<?> handleEntityNotFoundException(EntityNotFoudException exception){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(SqlViolationException.class)
+    protected ResponseEntity<?> handleSqlViolationException(SqlViolationException sqlViolationException){
+        return ResponseEntity.badRequest().body(sqlViolationException.getMessage());
+    }
+
+    @ExceptionHandler(UserDoesNotOwnTask.class)
+    protected ResponseEntity<?> handleUserDoesNotOwnTaskException(UserDoesNotOwnTask userDoesNotOwnTask){
+        return ResponseEntity.badRequest().body(userDoesNotOwnTask.getMessage());
+    }
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         Map<String,Object> clientErrors = new HashMap<>();
@@ -22,6 +42,6 @@ public class ExceptionController extends ResponseEntityExceptionHandler {
                 clientErrors.put(fieldError.getField(),fieldError.getDefaultMessage());
                 System.out.println(fieldError.getObjectName());
         });
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(clientErrors);
+        return ResponseEntity.badRequest().body(clientErrors);
     }
 }

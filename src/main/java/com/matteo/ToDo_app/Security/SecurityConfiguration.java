@@ -38,18 +38,45 @@ public class SecurityConfiguration {
             http
                     .cors().configurationSource(corsConfigurationSource())
                     .and()
-                    .csrf(AbstractHttpConfigurer::disable)
-                    .authorizeHttpRequests(auth -> {
+                    .csrf()
+                    .disable()
+                    .authorizeHttpRequests()
+                    .requestMatchers(
+                            "/v1/auth/**",
+                            "/v2/api-docs",
+                            "/v3/api-docs",
+                            "/v3/api-docs/**",
+                            "/swagger-resources",
+                            "/swagger-resources/**",
+                            "/configuration/ui",
+                            "/configuration/security",
+                            "/swagger-ui/**",
+                            "/webjars/**",
+                            "/swagger-ui.html")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated()
+                    .and()
+                /*    .authorizeHttpRequests(auth -> {
                         auth.requestMatchers(
                                 "/v1/auth/**",
-                                        "/swagger-ui/**",
-                                        "/swagger-ui.html",
-                                        "/swagger-resources/**")
+                                        "/v2/api-docs",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/",
+                                        "/swagger-resources",
+                                        "/swagger-resources/",
+                                        "/configuration/ui",
+                                        "/configuration/security",
+                                        "/swagger-ui/",
+                                        "/webjars/",
+                                        "/swagger-ui.html")
                                 .permitAll();
                         auth.requestMatchers("/v1/tasks/**").hasAuthority("ROLE_USER");
                         //auth.requestMatchers("/turnos/**", "/index.html").hasAnyRole("ROL_ADMIN", "ROL_USER");
                         auth.anyRequest().authenticated();
                     })
+
+                 */
                     .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                     .and()

@@ -5,6 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,11 +26,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-        if (httpServletRequest.getServletPath().contains("/v1/auth")){
+    protected void doFilterInternal(@NotNull HttpServletRequest httpServletRequest, @NotNull HttpServletResponse httpServletResponse, @NotNull FilterChain filterChain) throws ServletException, IOException {
+        /*System.out.println(httpServletRequest.getServletPath());
+        if (httpServletRequest.getServletPath().contains("/v1/auth") || httpServletRequest.getServletPath().contains("/swagger-ui/**")){
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
+
+         */
         final String authorizationHeader = httpServletRequest.getHeader("Authorization");
         String jwt;
         String userEmail;
@@ -42,6 +46,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
         else
             jwt = authorizationHeader;
+
         userEmail = jwtUtils.extractUserName(jwt);
         userId = jwtUtils.extractUserID(jwt);
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {

@@ -23,7 +23,7 @@ public class TaskServiceImpl implements ITaskService {
 
     @Override
     public Task saveTask(PostTaskDto postTaskDto, Long userId) throws EntityNotFoudException {
-        if (userRepository.existsById(userId)){
+        if (userRepository.existsById(userId)) {
             Task taskToSave = new Task(postTaskDto.description(),false,LocalDateTime.now());
             taskToSave.setUser(new User());
             taskToSave.getUser().setId(userId);
@@ -35,7 +35,7 @@ public class TaskServiceImpl implements ITaskService {
 
 
     @Override
-    public List<Task> findAllUserTaskByStatus(Long userId, Boolean completed) throws Exception {
+    public List<Task> findAllUserTaskByStatus(Long userId, Boolean completed) throws EntityNotFoudException {
         if (userRepository.existsById(userId))
             return taskRepository.findTaskByUserAndCompleted(userId, completed);
         throw new EntityNotFoudException("user not found to show tasks");
@@ -91,7 +91,7 @@ public class TaskServiceImpl implements ITaskService {
         else
             throw new UserDoesNotOwnTask("can't delete a task you didn't create");
     }
-    public boolean validateUserOwnsTask(Long userId,Long taskId){
+    private boolean validateUserOwnsTask(Long userId,Long taskId){
         var task = taskRepository.findUserTaskByIds(userId,taskId);
         if (task.isPresent())
             return true;
