@@ -1,6 +1,6 @@
 package com.matteo.ToDo_app.Dtos.UserDto;
 
-public record GetUserDto(
+public record GetUserResp(
         String firstName,
         String lastName) {
 }

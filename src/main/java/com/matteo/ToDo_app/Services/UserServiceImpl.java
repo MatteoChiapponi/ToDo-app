@@ -1,9 +1,12 @@
 package com.matteo.ToDo_app.Services;
 
-import com.matteo.ToDo_app.Dtos.UserDto.GetUserDto;
-import com.matteo.ToDo_app.Dtos.UserDto.RegisterUserDto;
+import com.matteo.ToDo_app.Dtos.UserDto.GetUserResp;
+import com.matteo.ToDo_app.Dtos.UserDto.RegisterUserReq;
 import com.matteo.ToDo_app.Entitys.User.User;
 import com.matteo.ToDo_app.Entitys.User.UserRole;
+import com.matteo.ToDo_app.Exceptions.BadRequestException;
+import com.matteo.ToDo_app.Exceptions.EntityNotFoudException;
+import com.matteo.ToDo_app.Exceptions.SqlViolationException;
 import com.matteo.ToDo_app.Repositorys.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,37 +28,39 @@ public class UserServiceImpl implements UserDetailsService, IUserService{
     }
 
     @Override
-    public User saveNewUser(RegisterUserDto registerUserDto) throws Exception {
-        if (registerUserDto.password().equals(registerUserDto.repitedPassword())){
-            User user = new User(registerUserDto.firstName(),registerUserDto.lastName(),registerUserDto.email(),passwordEncoder.encode(registerUserDto.password()),UserRole.ROLE_USER);
-            System.out.println(user.getId());
-            return userRepository.save(user);
+    public User saveNewUser(RegisterUserReq registerUserReq) throws BadRequestException, SqlViolationException {
+        if (registerUserReq.password().equals(registerUserReq.repitedPassword())){
+            if (userRepository.findUserByEmail(registerUserReq.email()).isEmpty()){
+                User user = new User(registerUserReq.firstName(), registerUserReq.lastName(), registerUserReq.email(),passwordEncoder.encode(registerUserReq.password()),UserRole.ROLE_USER);
+                return userRepository.save(user);
+            }else
+                throw new SqlViolationException("user email already exist");
         }
         else
-            throw new Exception("both password must be equals");
+            throw new BadRequestException("both password must be equals");
     }
 
     @Override
-    public GetUserDto findUserById(Long id) throws Exception {
+    public GetUserResp findUserById(Long id) throws EntityNotFoudException {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()){
             var user = userOptional.get();
-            return new GetUserDto(user.getFirstName(), user.getLastName());
+            return new GetUserResp(user.getFirstName(), user.getLastName());
         }
-        throw new Exception("user not found");
+        throw new EntityNotFoudException("user not found");
     }
 
     @Override
-    public User findUserByEmail(String email) throws Exception {
+    public User findUserByEmail(String email) throws EntityNotFoudException {
         Optional<User> user = userRepository.findUserByEmail(email);
         if (user.isPresent())
             return user.get();
         else
-            throw new Exception("user not found");
+            throw new EntityNotFoudException("user not found");
     }
 
     @Override
-    public List<GetUserDto> findALlUser() throws Exception {
+    public List<GetUserResp> findALlUser() throws Exception {
         return null;
     }
 

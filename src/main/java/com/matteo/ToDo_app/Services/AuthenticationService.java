@@ -2,7 +2,7 @@ package com.matteo.ToDo_app.Services;
 
 import com.matteo.ToDo_app.Dtos.UserDto.AuthenticationUserReq;
 import com.matteo.ToDo_app.Dtos.UserDto.AuthenticationUserResp;
-import com.matteo.ToDo_app.Dtos.UserDto.RegisterUserDto;
+import com.matteo.ToDo_app.Dtos.UserDto.RegisterUserReq;
 import com.matteo.ToDo_app.Security.JwtUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,8 +34,8 @@ public class AuthenticationService {
         String jwt = jwtUtils.generateToken(user,extraClaims);
         return new AuthenticationUserResp(jwt);
     }
-    public AuthenticationUserResp registerUser(RegisterUserDto registerUserDto) throws Exception {
-        var user = userService.saveNewUser(registerUserDto);
+    public AuthenticationUserResp registerUser(RegisterUserReq registerUserReq) throws Exception {
+        var user = userService.saveNewUser(registerUserReq);
         Map extraClaims = new HashMap<String,Object>();
         extraClaims.put("id",user.getId());
         String jwt = jwtUtils.generateToken(user,extraClaims);
