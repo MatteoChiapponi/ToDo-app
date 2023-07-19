@@ -6,6 +6,7 @@ log4j para el logeo de informacion sobre las consultas que son realizadas a la a
 
 # Para correr la app
 1- tener mysql instalado porque la base de datos esta hosteada en el localhost corriendo en el puerto 3306(por defecto de mysql)
+
 2- correr el siguiente script en la cli de mysql para generar la db la cual es mapeada por hibernate:
 
 CREATE SCHEMA IF NOT EXISTS `to-do_app` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci ;
@@ -42,4 +43,4 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 3- ejecutar el metodo main (tener java e intellij instalado)
 
-PD: la app (tomcat) corre en el puerto 8080 del localhost
+PD: la app (apache) corre en el localhost puerto 8080
